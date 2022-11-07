@@ -17,24 +17,25 @@ import {
   del,
   requestBody,
   response,
+  HttpErrors,
 } from '@loopback/rest';
-import {Credenciales, RegistroAdmin} from '../models';
-import {RegistroAdminRepository} from '../repositories';
+import { Credenciales, RegistroAdmin } from '../models';
+import { RegistroAdminRepository } from '../repositories';
 import { AutenticacionService } from '../services';
 const fetch = require('node-fetch');
 
 export class AdministradorController {
   constructor(
     @repository(RegistroAdminRepository)
-    public registroAdminRepository : RegistroAdminRepository,
+    public registroAdminRepository: RegistroAdminRepository,
     @service(AutenticacionService)
-    public servicioAutenticacion : AutenticacionService
-  ) {}
+    public servicioAutenticacion: AutenticacionService
+  ) { }
 
   @post('/registro-admins')
   @response(200, {
     description: 'RegistroAdmin model instance',
-    content: {'application/json': {schema: getModelSchemaRef(RegistroAdmin)}},
+    content: { 'application/json': { schema: getModelSchemaRef(RegistroAdmin) } },
   })
   async create(
     @requestBody({
@@ -62,8 +63,8 @@ export class AdministradorController {
       .then((data: any) => {
         console.log(data);
       });
-      return p;
-  
+    return p;
+
   }
 
   @post('/administradors/identificar')
@@ -74,12 +75,27 @@ export class AdministradorController {
     @requestBody() creds: Credenciales
   ) {
     let p = await this.servicioAutenticacion.IdentificarAdministrador(creds.usuario, creds.clave);
+
+    if (p) {
+      let token = this.servicioAutenticacion.GenerarTokenJWT(p)
+      return {
+        datos: { nombre: p.nombre_admin, correo: p.correo_admin, id: p.id },
+        tk: token
+      }
+    } else {
+      throw new HttpErrors[401]('Datos invalidos');
+    }
+
+
+
+
+
   }
 
   @get('/registro-admins/count')
   @response(200, {
     description: 'RegistroAdmin model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async count(
     @param.where(RegistroAdmin) where?: Where<RegistroAdmin>,
@@ -94,7 +110,7 @@ export class AdministradorController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(RegistroAdmin, {includeRelations: true}),
+          items: getModelSchemaRef(RegistroAdmin, { includeRelations: true }),
         },
       },
     },
@@ -108,13 +124,13 @@ export class AdministradorController {
   @patch('/registro-admins')
   @response(200, {
     description: 'RegistroAdmin PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(RegistroAdmin, {partial: true}),
+          schema: getModelSchemaRef(RegistroAdmin, { partial: true }),
         },
       },
     })
@@ -129,13 +145,13 @@ export class AdministradorController {
     description: 'RegistroAdmin model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(RegistroAdmin, {includeRelations: true}),
+        schema: getModelSchemaRef(RegistroAdmin, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(RegistroAdmin, {exclude: 'where'}) filter?: FilterExcludingWhere<RegistroAdmin>
+    @param.filter(RegistroAdmin, { exclude: 'where' }) filter?: FilterExcludingWhere<RegistroAdmin>
   ): Promise<RegistroAdmin> {
     return this.registroAdminRepository.findById(id, filter);
   }
@@ -149,7 +165,7 @@ export class AdministradorController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(RegistroAdmin, {partial: true}),
+          schema: getModelSchemaRef(RegistroAdmin, { partial: true }),
         },
       },
     })

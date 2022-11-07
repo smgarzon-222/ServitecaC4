@@ -48,6 +48,7 @@ export class RegistroAdmin extends Entity {
 
   @hasMany(() => VentaServicio)
   ventaServicios: VentaServicio[];
+  correo: any;
 
   constructor(data?: Partial<RegistroAdmin>) {
     super(data);

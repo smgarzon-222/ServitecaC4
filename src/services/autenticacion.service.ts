@@ -1,5 +1,7 @@
 import {injectable, /* inject, */ BindingScope} from '@loopback/core';
 import { repository } from '@loopback/repository';
+import { Llaves } from '../config/llaves';
+import { RegistroAdmin } from '../models';
 import {RegistroAdminRepository} from '../repositories';
 const generador = require('password-generator');
 const cryptoJS = require('crypto-js');
@@ -44,6 +46,18 @@ export class AutenticacionService {
       } catch {
         return false;
       }
+    }
+
+    GenerarTokenJWT(registroAdmin: RegistroAdmin) {
+      let token = jwt.sign({
+        data: {
+          id: registroAdmin.id,
+          correo: registroAdmin.correo,
+          nombre: registroAdmin.nombre_admin + " " + registroAdmin.apellido_admin
+        }
+      },
+        Llaves.llaveJWT);
+      return token;
     }
 
 
