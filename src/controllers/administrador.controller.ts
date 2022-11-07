@@ -57,7 +57,7 @@ export class AdministradorController {
 
     let destino = registroAdmin.correo_admin;
     let asunto = 'Registro en la plataforma';
-    let contenido = `Hola ${registroAdmin.nombre_admin}, su usuario es: ${registroAdmin.correo_admin} y su contraseña es: ${clave}`;
+    let contenido = `Hola ${registroAdmin.nombre_admin} ${registroAdmin.apellido_admin}, su usuario es: ${registroAdmin.correo_admin} y su contraseña es: ${clave}`;
     fetch(`http://127.0.0.1:5000/envio-correo?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
       .then((data: any) => {
         console.log(data);

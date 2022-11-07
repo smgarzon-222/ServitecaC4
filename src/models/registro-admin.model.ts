@@ -11,10 +11,10 @@ export class RegistroAdmin extends Entity {
   id?: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  documento_admin: number;
+  documento_admin: string;
 
   @property({
     type: 'string',
@@ -35,10 +35,10 @@ export class RegistroAdmin extends Entity {
   correo_admin: string;
 
   @property({
-    type: 'number',
+    type: 'string',
     required: true,
   })
-  celular_admin: number;
+  celular_admin: string;
 
   @property({
     type: 'string',
