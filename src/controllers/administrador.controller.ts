@@ -1,3 +1,4 @@
+import { service } from '@loopback/core';
 import {
   Count,
   CountSchema,
@@ -19,11 +20,15 @@ import {
 } from '@loopback/rest';
 import {RegistroAdmin} from '../models';
 import {RegistroAdminRepository} from '../repositories';
+import { AutenticacionService } from '../services';
+const fetch = require('node-fetch');
 
 export class AdministradorController {
   constructor(
     @repository(RegistroAdminRepository)
     public registroAdminRepository : RegistroAdminRepository,
+    @service(AutenticacionService)
+    public servicioAutenticacion : AutenticacionService
   ) {}
 
   @post('/registro-admins')
@@ -44,7 +49,21 @@ export class AdministradorController {
     })
     registroAdmin: Omit<RegistroAdmin, 'id'>,
   ): Promise<RegistroAdmin> {
-    return this.registroAdminRepository.create(registroAdmin);
+
+    let clave = this.servicioAutenticacion.GenerarClave();
+    let cifrada = this.servicioAutenticacion.CifrarClave(clave);
+    registroAdmin.clave_admin = cifrada;
+    let p = await this.registroAdminRepository.create(registroAdmin);
+
+    let destino = registroAdmin.correo_admin;
+    let asunto = 'Registro en la plataforma';
+    let contenido = `Hola ${registroAdmin.nombre_admin}, su usuario es: ${registroAdmin.correo_admin} y su contraseña es: ${clave}`;
+    fetch(`http://127.0.0.1:5000/envio-correo?correo_destino=${destino}&asunto=${asunto}&contenido=${contenido}`)
+      .then((data: any) => {
+        console.log(data);
+      });
+      return p;
+  
   }
 
   @get('/registro-admins/count')
