@@ -18,7 +18,7 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {RegistroAdmin} from '../models';
+import {Credenciales, RegistroAdmin} from '../models';
 import {RegistroAdminRepository} from '../repositories';
 import { AutenticacionService } from '../services';
 const fetch = require('node-fetch');
@@ -64,6 +64,16 @@ export class AdministradorController {
       });
       return p;
   
+  }
+
+  @post('/administradors/identificar')
+  @response(200, {
+    description: 'Identificación de administrador'
+  })
+  async identificar(
+    @requestBody() creds: Credenciales
+  ) {
+    let p = await this.servicioAutenticacion.IdentificarAdministrador(creds.usuario, creds.clave);
   }
 
   @get('/registro-admins/count')
