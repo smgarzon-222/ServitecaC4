@@ -60,6 +60,15 @@ export class AutenticacionService {
       return token;
     }
 
+    ValidarTokenJWT(token: string) {
+      try {
+        let datos = jwt.verify(token, Llaves.llaveJWT);
+        return datos;
+      } catch {
+        return false;
+      }
+    }
+
 
 
 
