@@ -35,7 +35,7 @@ export class Vehiculos extends Entity {
   modelo_vehiculo: string;
 
   @property({
-    type: 'date',
+    type: 'string',
     required: true,
   })
   ano_vehiculo: string;
